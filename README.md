@@ -18,7 +18,7 @@
 |---|---|
 | `GenZLab-PunchBoard-1.0.0-x64.exe` | 일반 Windows PC (대부분 이 파일) |
 | `GenZLab-PunchBoard-1.0.0-arm64.exe` | ARM 방식 Windows PC (Snapdragon 노트북 등) |
-| `사용법.txt` | 행사 운영자용 사용 안내 |
+| `USAGE-ko.txt` | 행사 운영자용 사용 안내 (한국어) |
 
 서명이 없는 프로그램이라 처음 실행할 때 "Windows의 PC 보호" 경고가 뜹니다. **추가 정보 → 실행**을 누르면 됩니다.
 
