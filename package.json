@@ -1,0 +1,42 @@
+{
+  "name": "ppopgi-board",
+  "productName": "Gen Z Lab. 뽑기판",
+  "version": "1.0.0",
+  "description": "Gen Z Lab. 부스 운영용 뽑기판 프로그램",
+  "main": "main.js",
+  "author": "GenZ Lab",
+  "license": "UNLICENSED",
+  "private": true,
+  "scripts": {
+    "start": "electron .",
+    "test": "node test/logic.test.js",
+    "dist": "electron-builder --win portable"
+  },
+  "dependencies": {
+    "@fontsource/jua": "^5.0.0",
+    "@fontsource/noto-sans-kr": "^5.0.0"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "org.genzlab.ppopgi",
+    "productName": "Gen Z Lab. 뽑기판",
+    "artifactName": "ppopgi-board-${version}.${ext}",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "preload.js",
+      "renderer/**/*",
+      "node_modules/@fontsource/**/*",
+      "package.json"
+    ],
+    "win": {
+      "target": "portable",
+      "icon": "build/icon.ico"
+    }
+  }
+}

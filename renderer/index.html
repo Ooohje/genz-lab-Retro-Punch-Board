@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self' file: data: blob:; style-src 'self' 'unsafe-inline' file:; img-src 'self' file: data: blob:; font-src 'self' file: data:">
+<title>Gen Z Lab. 뽑기판</title>
+<link rel="stylesheet" href="../node_modules/@fontsource/jua/index.css">
+<link rel="stylesheet" href="../node_modules/@fontsource/noto-sans-kr/400.css">
+<link rel="stylesheet" href="../node_modules/@fontsource/noto-sans-kr/700.css">
+<link rel="stylesheet" href="../node_modules/@fontsource/noto-sans-kr/900.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 참여자 화면: 1920x1080(가로) 또는 1080x1920(세로)으로 그린 뒤 창 크기에 맞춰 확대/축소합니다 -->
+<div id="stage" class="landscape" aria-live="polite">
+  <div class="top">
+    <img id="logoImg" class="logo" src="assets/logo.png" alt="로고">
+    <div id="eventName" class="event"></div>
+  </div>
+
+  <div class="title-wrap">
+    <img class="key" src="assets/key.png" alt="">
+    <h1 id="title" class="title"></h1>
+  </div>
+
+  <div id="ranks" class="ranks"></div>
+
+  <div class="mascot">
+    <img src="assets/gleaming_wave.png" alt="손을 흔드는 글리밍">
+    <div id="bubble" class="bubble"></div>
+  </div>
+
+  <div class="board-head">
+    <div id="tagline" class="tagline"></div>
+    <div id="remain" class="remain"></div>
+  </div>
+
+  <div class="board-box">
+    <div id="board" class="board"></div>
+  </div>
+
+  <button id="hint" class="hint" type="button">
+    <svg aria-hidden="true" width="64" height="48" viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M52 6v20H14"/><path d="M26 14 14 26l12 12"/></svg>
+    <span id="hintText"></span>
+  </button>
+
+  <!-- 쪽지가 펼쳐지는 연출 -->
+  <div id="unfold" class="overlay unfold" hidden>
+    <div class="unfold-dim"></div>
+    <!-- 접힌 종이: 뽑힌 칸에서 빠져나와 아래로 샤라락 펼쳐집니다(칸은 app.js 가 4단으로 만듭니다) -->
+    <div id="paper" class="paper"></div>
+  </div>
+
+  <!-- 당첨 결과 -->
+  <div id="result" class="overlay result" hidden>
+    <canvas id="confetti" class="confetti"></canvas>
+    <div class="result-body">
+      <div class="result-art">
+        <img class="result-key" src="assets/key.png" alt="">
+        <img id="resultImg" class="result-img" src="assets/gleaming_cheer.png" alt="">
+      </div>
+      <div class="result-card">
+        <div class="result-line">
+          <span id="resultCell" class="chip"></span>
+          <span id="resultHead" class="result-head"></span>
+        </div>
+        <div id="resultRank" class="result-rank"></div>
+        <div id="resultPrize" class="result-prize"></div>
+        <div id="resultNote" class="result-note"></div>
+      </div>
+    </div>
+    <div class="result-foot">
+      <div class="pill">
+        <svg aria-hidden="true" width="52" height="40" viewBox="0 0 64 48" fill="none" stroke="currentColor" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"><path d="M52 6v20H14"/><path d="M26 14 14 26l12 12"/></svg>
+        <span>버튼을 누르면 다음 분 차례</span>
+      </div>
+      <div id="countdown" class="countdown">
+        <div id="countdownText" class="countdown-text"></div>
+        <div class="countdown-track"><div id="countdownBar" class="countdown-bar"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 판을 다 뽑았을 때 -->
+  <div id="done" class="overlay done" hidden>
+    <img src="assets/gleaming_wave.png" alt="">
+    <div class="done-card">
+      <div class="done-title">모든 칸을 뽑았어요!</div>
+      <div id="doneText" class="done-text"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 전체 화면 버튼: 마우스로만 누릅니다(엔터 버튼으로는 눌리지 않음) -->
+<div id="cornerBtns" class="corner-btns">
+  <button id="adminBtn" class="fs-btn" type="button" tabindex="-1">
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2.4"/><circle cx="8" cy="17" r="2.4"/></svg>
+    <span>설정 (F2)</span>
+  </button>
+  <button id="fsBtn" class="fs-btn" type="button" tabindex="-1">
+    <svg aria-hidden="true" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <span id="fsBtnText">전체 화면</span>
+  </button>
+</div>
+
+<!-- 관리자 설정(F2) -->
+<div id="admin" class="admin" hidden></div>
+
+<!-- 확인 창: 큰 엔터 버튼으로 실수로 눌리지 않도록 마우스로만 누를 수 있습니다 -->
+<div id="modal" class="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div id="modalTitle" class="modal-title"></div>
+    <div id="modalText" class="modal-text"></div>
+    <input id="modalInput" class="modal-input" type="password" autocomplete="off" hidden>
+    <div class="modal-actions">
+      <button id="modalCancel" type="button" class="btn">취소</button>
+      <button id="modalOk" type="button" class="btn primary">확인</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="logic.js"></script>
+<script src="sound.js"></script>
+<script src="app.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>
