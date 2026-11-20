@@ -82,7 +82,7 @@
   }
 
   function persist() {
-    return Platform.save({ version: 3, settings: App.settings, board: App.board }).catch(function () {
+    return Platform.save({ version: 4, settings: App.settings, board: App.board }).catch(function () {
       toast('저장에 실패했습니다. 디스크 공간과 권한을 확인해 주세요.');
     });
   }
@@ -363,7 +363,8 @@
     clearTimers();
     App.phase = 'slow';
     renderHint();
-    var target = App.settings.stopSeconds * 1000;
+    // 계속 도는 방식에서는 항상 누른 자리에 바로 멈춥니다.
+    var target = App.settings.alwaysSpin ? 0 : App.settings.stopSeconds * 1000;
     var d = Math.max(60, L.speedToMs(App.settings.cursorSpeed));
     var delays = [], sum = 0;
     while (sum < target && delays.length < 80) { delays.push(d); sum += d; d = Math.min(d * 1.2, 700); }
@@ -721,7 +722,10 @@
     App.board = ok ? b : L.createBoard(App.settings);
     if (!App.board) { App.settings = L.defaultSettings(); App.board = L.createBoard(App.settings); }
     S.setVolume(App.settings.volume);
-    if (!ok || oldSave || preV3) persist();
+    // 결과 화면 기본 시간이 8초에서 4초로 바뀌었습니다. 예전 기본값 그대로인 저장본에만 한 번 적용합니다.
+    var preV4 = !!saved && !(saved.version >= 4);
+    if (preV4 && App.settings.resultSeconds === 8) App.settings.resultSeconds = 4;
+    if (!ok || oldSave || preV3 || preV4) persist();
     renderFsBtn();
     var start = function () { layout(); renderHeader(); if (App.phase === 'idle' || App.phase === 'done') { needFull = true; toIdle(); } };
     start();

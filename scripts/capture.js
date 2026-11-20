@@ -82,7 +82,7 @@ async function run() {
   await shot(win, '04-paper-open.jpg');
 
   // 3. 결과 화면
-  await js(`window.setTimeout = window.__st; App.interrupt(); App.settings.resultSeconds = 8; true`);
+  await js(`window.setTimeout = window.__st; App.interrupt(); App.settings.resultSeconds = 4; true`);
   await sleep(1700);
   await js(`App.press(); true`);
   for (let i = 0; i < 150; i++) { if ((await js('App.phase')) === 'result') break; await sleep(100); }

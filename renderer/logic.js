@@ -35,7 +35,7 @@
       spinSeconds: 1,  // 알아서 멈출 때 불빛이 도는 시간
       paperSeconds: 1, // 펼쳐진 종이를 보여 주는 시간(그 뒤 결과 화면으로 넘어감)
       stopSeconds: 0, // 0 = 바로 멈춤, 1 이상 = 그 시간 동안 점점 느려지다 멈춤
-      resultSeconds: 8, // 0 이면 버튼을 누를 때까지 유지
+      resultSeconds: 4, // 0 이면 버튼을 누를 때까지 유지
       volume: 80,
       showRemaining: true,
       autoNewBoard: false,

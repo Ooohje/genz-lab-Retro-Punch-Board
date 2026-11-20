@@ -325,7 +325,12 @@
       field('진행 방식', seg(
         [{ value: 'auto', label: '알아서 멈춤' }, { value: 'manual', label: '눌러서 멈춤' }, { value: 'always', label: '계속 돌기' }],
         draft.alwaysSpin ? 'always' : draft.autoStop ? 'auto' : 'manual',
-        function (v) { draft.alwaysSpin = v === 'always'; draft.autoStop = v !== 'manual'; lookChange(); render(); }
+        function (v) {
+          draft.alwaysSpin = v === 'always'; draft.autoStop = v !== 'manual';
+          // 계속 돌기는 누른 자리에 바로 멈추는 방식이라, 멈추는 시간을 '바로 멈춤'으로 맞춥니다.
+          if (draft.alwaysSpin) draft.stopSeconds = 0;
+          lookChange(); render();
+        }
       )),
       h('p', { class: 'sub', text: draft.alwaysSpin
         ? '불빛이 항상 돌고 있습니다. 엔터를 누르면 그 자리에 멈추고 상품이 열립니다.'
@@ -334,7 +339,9 @@
           : '엔터를 누르면 불빛이 돌고, 한 번 더 누르면 멈춥니다.' }),
       draft.autoStop && !draft.alwaysSpin ? slider('도는 시간', 'spinSeconds', 1, 15, function (v) { return v + '초'; }) : null,
       slider('종이 보여주는 시간', 'paperSeconds', 0, 8, function (v) { return v + '초'; }),
-      slider('멈추는 시간', 'stopSeconds', 0, 8, function (v) { return v === 0 ? '바로 멈춤' : v + '초'; }),
+      draft.alwaysSpin
+        ? field('멈추는 시간', h('div', { class: 'status', text: '바로 멈춤 (계속 돌기에서는 고정)' }))
+        : slider('멈추는 시간', 'stopSeconds', 0, 8, function (v) { return v === 0 ? '바로 멈춤' : v + '초'; }),
       slider('결과 유지 시간', 'resultSeconds', 0, 30, function (v) { return v === 0 ? '수동' : v + '초'; }),
       slider('음량', 'volume', 0, 100, function (v) { return v + '%'; }),
       field('남은 수량', seg([{ value: true, label: '화면에 보이기' }, { value: false, label: '숨기기' }], draft.showRemaining, function (v) { draft.showRemaining = v; lookChange(); render(); })),
