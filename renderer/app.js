@@ -264,9 +264,13 @@
     done: '모든 칸을 뽑았어요'
   };
   function renderHint() {
-    var phaseKey = App.phase === 'run' && App.settings.autoStop ? 'slow' : App.phase;
-    $('hintText').textContent = (App.phase === 'idle' && App.settings.hintIdle) || HINTS[phaseKey] || '';
-    $('hint').classList.toggle('pulse', App.phase === 'idle');
+    var always = App.settings.alwaysSpin;
+    var phaseKey = App.phase === 'run' && App.settings.autoStop && !always ? 'slow' : App.phase;
+    var text = (App.phase === 'idle' && App.settings.hintIdle) || HINTS[phaseKey] || '';
+    // 계속 도는 방식에서는 돌고 있는 상태가 곧 "대기"이므로 대기 문구를 보여 줍니다.
+    if (always && App.phase === 'run') text = App.settings.hintIdle || HINTS.idle;
+    $('hintText').textContent = text;
+    $('hint').classList.toggle('pulse', App.phase === 'idle' || (always && App.phase === 'run'));
   }
 
   function renderAll() {
@@ -314,6 +318,12 @@
       $('done').hidden = false;
     }
     renderHint();
+    // 계속 도는 방식: 누르지 않아도 잠깐 뒤 불빛이 스스로 돌기 시작합니다.
+    if (App.settings.alwaysSpin && App.phase === 'idle') {
+      later(function () {
+        if (App.phase === 'idle' && App.settings.alwaysSpin && !App.adminOpen && !App.modalOpen) startRun();
+      }, 500);
+    }
   }
 
   function moveCursor() {
@@ -328,7 +338,8 @@
       else do { next = closed[Math.floor(Math.random() * closed.length)]; } while (next === App.cursor);
     }
     setCursor(next);
-    S.play('tick');
+    // 계속 도는 방식에서는 기다리는 내내 소리가 나지 않도록, 도는 동안의 똑딱 소리를 끕니다.
+    if (!(App.settings.alwaysSpin && App.phase === 'run')) S.play('tick');
   }
 
   function startRun() {
@@ -337,7 +348,9 @@
     renderHint();
     moveCursor();
     timers.iv = setInterval(moveCursor, L.speedToMs(App.settings.cursorSpeed));
-    if (App.settings.autoStop) {
+    if (App.settings.alwaysSpin) {
+      // 계속 도는 방식: 누를 때까지 계속 돕니다(시간 제한 없음).
+    } else if (App.settings.autoStop) {
       // 한 번만 눌러도 정해 둔 시간 동안 돌다가 알아서 멈춥니다.
       later(function () { if (App.phase === 'run') startSlow(); }, App.settings.spinSeconds * 1000);
     } else {
@@ -518,7 +531,7 @@
       startRun();
     } else if (App.phase === 'run') {
       // 알아서 멈추는 방식에서는 도는 동안 눌러도 아무 일도 일어나지 않습니다.
-      if (!App.settings.autoStop) startSlow();
+      if (App.settings.alwaysSpin || !App.settings.autoStop) startSlow();
     } else if (App.phase === 'result') {
       toIdle();
     } else if (App.phase === 'done') {

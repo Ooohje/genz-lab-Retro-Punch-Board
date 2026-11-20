@@ -1,7 +1,7 @@
 {
   "name": "ppopgi-board",
   "productName": "Gen Z Lab. 뽑기판",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Gen Z Lab. 부스 운영용 뽑기판 프로그램",
   "main": "main.js",
   "author": "GenZ Lab",

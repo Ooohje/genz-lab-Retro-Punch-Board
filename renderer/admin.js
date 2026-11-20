@@ -322,8 +322,17 @@
       field('불빛 이동', seg([{ value: 'random', label: '무작위로 점프' }, { value: 'sequence', label: '순서대로' }], draft.cursorMode, function (v) { draft.cursorMode = v; lookChange(); render(); })),
       slider('불빛 속도', 'cursorSpeed', 1, 10, function (v) { return v + '단계'; }, runPreview),
       field('속도 미리보기', preview),
-      field('멈추는 방식', seg([{ value: true, label: '알아서 멈춤' }, { value: false, label: '눌러서 멈춤' }], draft.autoStop, function (v) { draft.autoStop = v; lookChange(); render(); })),
-      draft.autoStop ? slider('도는 시간', 'spinSeconds', 1, 15, function (v) { return v + '초'; }) : null,
+      field('진행 방식', seg(
+        [{ value: 'auto', label: '알아서 멈춤' }, { value: 'manual', label: '눌러서 멈춤' }, { value: 'always', label: '계속 돌기' }],
+        draft.alwaysSpin ? 'always' : draft.autoStop ? 'auto' : 'manual',
+        function (v) { draft.alwaysSpin = v === 'always'; draft.autoStop = v !== 'manual'; lookChange(); render(); }
+      )),
+      h('p', { class: 'sub', text: draft.alwaysSpin
+        ? '불빛이 항상 돌고 있습니다. 엔터를 누르면 그 자리에 멈추고 상품이 열립니다.'
+        : draft.autoStop
+          ? '엔터를 한 번 누르면 불빛이 돌다가 알아서 멈춥니다.'
+          : '엔터를 누르면 불빛이 돌고, 한 번 더 누르면 멈춥니다.' }),
+      draft.autoStop && !draft.alwaysSpin ? slider('도는 시간', 'spinSeconds', 1, 15, function (v) { return v + '초'; }) : null,
       slider('종이 보여주는 시간', 'paperSeconds', 0, 8, function (v) { return v + '초'; }),
       slider('멈추는 시간', 'stopSeconds', 0, 8, function (v) { return v === 0 ? '바로 멈춤' : v + '초'; }),
       slider('결과 유지 시간', 'resultSeconds', 0, 30, function (v) { return v === 0 ? '수동' : v + '초'; }),

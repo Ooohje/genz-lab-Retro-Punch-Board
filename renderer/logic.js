@@ -31,6 +31,7 @@
       cursorSpeed: 7, // 1(느림) ~ 10(빠름)
       cursorMode: 'random', // 'random' | 'sequence'
       autoStop: true,  // true = 한 번 누르면 알아서 돌다가 멈춤, false = 한 번 더 눌러서 멈춤
+      alwaysSpin: false, // true = 불빛이 항상 돌고 있고, 누르면 그 자리에 멈춤(autoStop 보다 우선)
       spinSeconds: 1,  // 알아서 멈출 때 불빛이 도는 시간
       paperSeconds: 1, // 펼쳐진 종이를 보여 주는 시간(그 뒤 결과 화면으로 넘어감)
       stopSeconds: 0, // 0 = 바로 멈춤, 1 이상 = 그 시간 동안 점점 느려지다 멈춤
@@ -84,6 +85,7 @@
     out.spinSeconds = clampInt(out.spinSeconds, 1, 15, d.spinSeconds);
     out.paperSeconds = clampInt(out.paperSeconds, 0, 8, d.paperSeconds);
     out.autoStop = out.autoStop !== false;
+    out.alwaysSpin = out.alwaysSpin === true;
     out.resultSeconds = clampInt(out.resultSeconds, 0, 60, d.resultSeconds);
     out.volume = clampInt(out.volume, 0, 100, d.volume);
     if (out.fillMode !== 'blank') out.fillMode = 'last';
